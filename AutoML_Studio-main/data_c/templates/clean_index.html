@@ -1,0 +1,920 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Cleaning Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="static/style.css">
+    <style>
+        body {
+            background-color: #000000FF;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            background-color: #000000FF;
+            border: 1px solid #333;
+        }
+        /* Add this to your existing style.css */
+#columnStats {
+    color: #ffffff;
+}
+
+#columnStats table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #ffffff;
+}
+
+#columnStats th, #columnStats td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: left;
+    background-color: #252525;
+    color: #ffffff;
+}
+
+#columnStats th {
+    background-color: #333;
+    position: sticky;
+    top: 0;
+}
+
+#columnStats .card {
+    background-color: #252525;
+    border: 1px solid #444;
+}
+
+#columnStats .card-header {
+    background-color: #333;
+    border-bottom: 1px solid #444;
+}
+/* Add this to your existing style.css file */
+#columnStats .text-muted{
+    color: #ffffff;
+}
+
+#columnStats table {
+    color: #ffffff;
+}
+
+#columnStats th, #columnStats td {
+    color: #ffffff;
+}
+
+#columnStats .card {
+    color: #ffffff;
+}
+
+#columnStats .card-body {
+    color: #ffffff;
+}
+        .card-header {
+            background-color: #2d2d2d;
+            font-weight: 600;
+            color: #ffffff;
+            border-bottom: 1px solid #333;
+        }
+        
+        .accordion-item {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+        }
+        
+        .accordion-button {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: #3d3d3d;
+            color: #ffffff;
+        }
+        
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: #333;
+        }
+        
+        .accordion-body {
+            background-color: #252525;
+        }
+        
+        #dataPreview {
+            overflow-x: auto;
+        }
+        
+        #dataPreview table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #ffffff;
+        }
+        
+        #dataPreview th, #dataPreview td {
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: left;
+            background-color: #252525;
+        }
+        
+        #dataPreview th {
+            background-color: #333;
+            position: sticky;
+            top: 0;
+        }
+        
+        .form-control, .form-select {
+            background-color: #333;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: #444;
+            color: #ffffff;
+            border-color: #555;
+            box-shadow: 0 0 0 0.25rem rgba(100, 100, 100, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #000;
+        }
+        
+        .btn-info {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: #000;
+        }
+        
+        .btn-dark {
+            background-color: #212529;
+            border-color: #212529;
+        }
+        
+        .modal-content {
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #333;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #333;
+        }
+        
+        .list-group-item {
+            background-color: #252525;
+            color: #ffffff;
+            border: 1px solid #333;
+        }
+        
+        .badge {
+            background-color: #444;
+            color: #ffffff;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* For select2 dropdowns */
+        .select2-container--default .select2-selection--single,
+        .select2-container--default .select2-selection--multiple {
+            background-color: #333;
+            border: 1px solid #444;
+            color: #ffffff;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #ffffff;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #ffffff transparent transparent transparent;
+        }
+        
+        .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+            border-color: transparent transparent #ffffff transparent;
+        }
+        
+        .select2-dropdown {
+            background-color: #333;
+            border: 1px solid #444;
+            color: #ffffff;
+        }
+        
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #444;
+        }
+        
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #555;
+            color: #ffffff;
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #444;
+            border: 1px solid #555;
+            color: #ffffff;
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #aaa;
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center my-4">Data Cleaning Tool By AutoML Studio</h1>
+                
+                <!-- File Upload Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Upload Dataset</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input class="form-control" type="file" id="fileInput" accept=".csv,.xlsx,.xls">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Data Preview Section -->
+                <div class="card mb-4" id="previewSection" style="display: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Data Preview</h5>
+                        <div>
+                            <button class="btn btn-sm btn-success me-2" id="downloadBtn">
+                                <i class="bi bi-download"></i> Download Cleaned Data
+                            </button>
+                            <button class="btn btn-sm btn-danger" id="resetBtn">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="dataPreview"></div>
+                    </div>
+                </div>
+                
+                <!-- Data Statistics Section -->
+                <div class="card mb-4" id="statsSection" style="display: none;">
+                    <div class="card-header">
+                        <h5>Column Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="columnStats"></div>
+                    </div>
+                </div>
+                
+                <!-- Cleaning Operations Section -->
+                <div class="card mb-4" id="operationsSection" style="display: none;">
+                    <div class="card-header">
+                        <h5>Data Cleaning Operations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="operationsAccordion">
+                            <!-- Missing Data Handling -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#missingData">
+                                        Missing Data Handling
+                                    </button>
+                                </h2>
+                                <div id="missingData" class="accordion-collapse collapse show" data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <h6>Delete Columns</h6>
+                                                <div class="input-group mb-3">
+                                                    <select class="form-select" id="columnsToDelete" multiple></select>
+                                                    <button class="btn btn-danger" id="deleteColumnsBtn">Delete Selected</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Drop Missing Values</h6>
+                                                <div class="input-group mb-3">
+                                                    <select class="form-select" id="dropNaMethod">
+                                                        <option value="all">Drop rows where ALL values are missing</option>
+                                                        <option value="any">Drop rows where ANY value is missing</option>
+                                                        <option value="threshold">Drop rows with less than X non-missing values</option>
+                                                    </select>
+                                                    <input type="number" class="form-control" id="dropNaThreshold" placeholder="Threshold" style="display: none;">
+                                                    <button class="btn btn-warning" id="dropNaBtn">Apply</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <h6>Impute Missing Values</h6>
+                                                <div class="input-group mb-3">
+                                                    <select class="form-select" id="imputeColumn"></select>
+                                                    <select class="form-select" id="imputeMethod">
+                                                        <option value="mean">Mean</option>
+                                                        <option value="median">Median</option>
+                                                        <option value="mode">Mode</option>
+                                                        <option value="knn">K-Nearest Neighbors</option>
+                                                        <option value="mice">MICE</option>
+                                                    </select>
+                                                    <input type="number" class="form-control" id="knnNeighbors" placeholder="Neighbors (k)" style="display: none;">
+                                                    <button class="btn btn-success" id="imputeBtn">Impute</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Outlier Handling -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#outlierHandling">
+                                        Outlier Detection & Treatment
+                                    </button>
+                                </h2>
+                                <div id="outlierHandling" class="accordion-collapse collapse" data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="outlierColumn" class="form-label">Column</label>
+                                                    <select class="form-select" id="outlierColumn"></select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="outlierMethod" class="form-label">Method</label>
+                                                    <select class="form-select" id="outlierMethod">
+                                                        <option value="zscore">Z-Score</option>
+                                                        <option value="iqr">IQR</option>
+                                                        <option value="isolation_forest">Isolation Forest</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3" id="zscoreParams">
+                                                    <label for="zscoreThreshold" class="form-label">Z-Score Threshold</label>
+                                                    <input type="number" class="form-control" id="zscoreThreshold" value="3" step="0.1">
+                                                </div>
+                                                <div class="mb-3" id="iqrParams" style="display: none;">
+                                                    <label for="iqrFactor" class="form-label">IQR Factor</label>
+                                                    <input type="number" class="form-control" id="iqrFactor" value="1.5" step="0.1">
+                                                </div>
+                                                <div class="mb-3" id="isolationParams" style="display: none;">
+                                                    <label for="contamination" class="form-label">Contamination</label>
+                                                    <input type="number" class="form-control" id="contamination" value="0.1" step="0.01" min="0.01" max="0.5">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="outlierAction" class="form-label">Action</label>
+                                                    <select class="form-select" id="outlierAction">
+                                                        <option value="remove">Remove Outliers</option>
+                                                        <option value="cap">Cap Outliers</option>
+                                                    </select>
+                                                </div>
+                                                <button class="btn btn-primary" id="outlierBtn">Apply</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Transformation -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dataTransformation">
+                                        Data Transformation
+                                    </button>
+                                </h2>
+                                <div id="dataTransformation" class="accordion-collapse collapse" data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>Normalization</h6>
+                                                <div class="input-group mb-3">
+                                                    <select class="form-select" id="normalizeColumn"></select>
+                                                    <select class="form-select" id="normalizeMethod">
+                                                        <option value="minmax">Min-Max</option>
+                                                        <option value="zscore">Z-Score</option>
+                                                    </select>
+                                                    <button class="btn btn-info" id="normalizeBtn">Normalize</button>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>Binning</h6>
+                                                <div class="input-group mb-3">
+                                                    <select class="form-select" id="binningColumn"></select>
+                                                    <select class="form-select" id="binningMethod">
+                                                        <option value="equal_width">Equal Width</option>
+                                                        <option value="equal_freq">Equal Frequency</option>
+                                                    </select>
+                                                    <input type="number" class="form-control" id="binningBins" placeholder="Bins" value="5">
+                                                    <button class="btn btn-info" id="binningBtn">Bin</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Text Cleaning -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#textCleaning">
+                                        Text Data Cleaning
+                                    </button>
+                                </h2>
+                                <div id="textCleaning" class="accordion-collapse collapse" data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="textColumn" class="form-label">Text Column</label>
+                                                    <select class="form-select" id="textColumn"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="textAction" class="form-label">Action</label>
+                                                    <select class="form-select" id="textAction">
+                                                        <option value="lowercase">Convert to Lowercase</option>
+                                                        <option value="remove_punct">Remove Punctuation</option>
+                                                        <option value="remove_stopwords">Remove Stopwords</option>
+                                                        <option value="correct_spelling">Correct Spelling</option>
+                                                    </select>
+                                                </div>
+                                                <button class="btn btn-secondary" id="textCleanBtn">Clean Text</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Deduplication -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#deduplication">
+                                        Deduplication
+                                    </button>
+                                </h2>
+                                <div id="deduplication" class="accordion-collapse collapse" data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="dedupMethod" class="form-label">Method</label>
+                                                    <select class="form-select" id="dedupMethod">
+                                                        <option value="exact">Exact Matching</option>
+                                                        <option value="fuzzy">Fuzzy Matching</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3" id="dedupColumnsContainer">
+                                                    <label for="dedupColumns" class="form-label">Columns to Match</label>
+                                                    <select class="form-select" id="dedupColumns" multiple></select>
+                                                </div>
+                                                <div class="mb-3" id="fuzzyParams" style="display: none;">
+                                                    <label for="fuzzyThreshold" class="form-label">Similarity Threshold (0-100)</label>
+                                                    <input type="number" class="form-control" id="fuzzyThreshold" min="0" max="100" value="80">
+                                                </div>
+                                                <button class="btn btn-dark" id="dedupBtn">Remove Duplicates</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Type Conversion -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#typeConversion">
+                                        Data Type Conversion
+                                    </button>
+                                </h2>
+                                <div id="typeConversion" class="accordion-collapse collapse" data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="convertColumn" class="form-label">Column</label>
+                                                    <select class="form-select" id="convertColumn"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="convertType" class="form-label">New Type</label>
+                                                    <select class="form-select" id="convertType">
+                                                        <option value="numeric">Numeric</option>
+                                                        <option value="datetime">Datetime</option>
+                                                        <option value="category">Category</option>
+                                                        <option value="string">String</option>
+                                                    </select>
+                                                </div>
+                                                <button class="btn btn-primary" id="convertBtn">Convert</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Operation History Modal -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Operation History</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group" id="historyList"></ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Global variables
+            let currentData = null;
+            let originalFile = null;
+            let operationHistory = [];
+        
+            // DOM elements
+            const uploadForm = document.getElementById('uploadForm');
+            const fileInput = document.getElementById('fileInput');
+            const previewSection = document.getElementById('previewSection');
+            const statsSection = document.getElementById('statsSection');
+            const operationsSection = document.getElementById('operationsSection');
+            const dataPreview = document.getElementById('dataPreview');
+            const columnStats = document.getElementById('columnStats');
+        
+            // Column selects
+            const columnSelects = [
+                'columnsToDelete', 'imputeColumn', 'outlierColumn', 'normalizeColumn',
+                'binningColumn', 'textColumn', 'convertColumn', 'dedupColumns'
+            ];
+        
+            // Event Listeners
+            uploadForm.addEventListener('submit', handleFileUpload);
+            document.getElementById('deleteColumnsBtn').addEventListener('click', deleteColumns);
+            document.getElementById('dropNaBtn').addEventListener('click', dropNa);
+            document.getElementById('imputeBtn').addEventListener('click', imputeData);
+            document.getElementById('outlierBtn').addEventListener('click', handleOutliers);
+            document.getElementById('normalizeBtn').addEventListener('click', normalizeData);
+            document.getElementById('binningBtn').addEventListener('click', binData);
+            document.getElementById('textCleanBtn').addEventListener('click', cleanText);
+            document.getElementById('dedupBtn').addEventListener('click', deduplicate);
+            document.getElementById('convertBtn').addEventListener('click', convertType);
+            document.getElementById('downloadBtn').addEventListener('click', downloadData);
+            document.getElementById('resetBtn').addEventListener('click', resetData);
+        
+            // Conditional input display
+            document.getElementById('dropNaMethod').addEventListener('change', function () {
+                document.getElementById('dropNaThreshold').style.display = this.value === 'threshold' ? 'block' : 'none';
+            });
+        
+            document.getElementById('imputeMethod').addEventListener('change', function () {
+                document.getElementById('knnNeighbors').style.display = this.value === 'knn' ? 'block' : 'none';
+            });
+        
+            document.getElementById('outlierMethod').addEventListener('change', function () {
+                document.getElementById('zscoreParams').style.display = 'none';
+                document.getElementById('iqrParams').style.display = 'none';
+                document.getElementById('isolationParams').style.display = 'none';
+        
+                if (this.value === 'zscore') {
+                    document.getElementById('zscoreParams').style.display = 'block';
+                } else if (this.value === 'iqr') {
+                    document.getElementById('iqrParams').style.display = 'block';
+                } else if (this.value === 'isolation_forest') {
+                    document.getElementById('isolationParams').style.display = 'block';
+                }
+            });
+        
+            document.getElementById('dedupMethod').addEventListener('change', function () {
+                document.getElementById('fuzzyParams').style.display = this.value === 'fuzzy' ? 'block' : 'none';
+            });
+        
+            // File Upload
+            function handleFileUpload(e) {
+                e.preventDefault();
+        
+                const file = fileInput.files[0];
+                if (!file) {
+                    alert('Please select a file.');
+                    return;
+                }
+        
+                const formData = new FormData();
+                formData.append('file', file);
+                originalFile = file;
+        
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) return alert(data.error);
+        
+                    currentData = data;
+                    displayDataPreview(data.preview);
+                    displayColumnStats(data.stats);
+                    updateColumnSelects(data.columns);
+        
+                    previewSection.style.display = 'block';
+                    statsSection.style.display = 'block';
+                    operationsSection.style.display = 'block';
+        
+                    operationHistory = [];
+                    addToHistory('File uploaded: ' + file.name);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Upload failed.');
+                });
+            }
+        
+            // Display functions
+            function displayDataPreview(html) {
+                dataPreview.innerHTML = html;
+            }
+        
+            function displayColumnStats(stats) {
+                let html = '<div class="row">';
+                for (const [col, stat] of Object.entries(stats)) {
+                    html += `
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6>${col}</h6>
+                                    <small class="text-muted">${stat.dtype}</small>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Unique:</strong> ${stat.unique}</p>
+                                    <p><strong>Missing:</strong> ${stat.missing}</p>
+                                    <p><strong>Sample:</strong> ${stat.sample.join(', ')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                html += '</div>';
+                columnStats.innerHTML = html;
+            }
+        
+            function updateColumnSelects(columns) {
+                columnSelects.forEach(id => {
+                    const select = document.getElementById(id);
+                    select.innerHTML = '';
+                    columns.forEach(col => {
+                        const option = document.createElement('option');
+                        option.value = col;
+                        option.textContent = col;
+                        select.appendChild(option);
+                    });
+        
+                    if (['columnsToDelete', 'dedupColumns'].includes(id)) {
+                        select.setAttribute('multiple', '');
+                    }
+                });
+            }
+        
+            // Operations
+            function deleteColumns() {
+                const cols = Array.from(document.getElementById('columnsToDelete').selectedOptions).map(opt => opt.value);
+                if (!cols.length) return alert('Select columns to delete.');
+                applyOperation({ type: 'delete_columns', params: { columns: cols } }, `Deleted columns: ${cols.join(', ')}`);
+            }
+        
+            function dropNa() {
+                const method = document.getElementById('dropNaMethod').value;
+                const params = { method };
+                if (method === 'threshold') {
+                    const threshold = parseInt(document.getElementById('dropNaThreshold').value);
+                    if (isNaN(threshold)) return alert('Invalid threshold.');
+                    params.threshold = threshold;
+                }
+                applyOperation({ type: 'drop_na', params }, `Dropped NAs (method: ${method})`);
+            }
+        
+            function imputeData() {
+                const column = document.getElementById('imputeColumn').value;
+                const method = document.getElementById('imputeMethod').value;
+                const params = { column, method };
+                if (method === 'knn') {
+                    const k = parseInt(document.getElementById('knnNeighbors').value);
+                    if (isNaN(k)) return alert('Invalid K value.');
+                    params.neighbors = k;
+                }
+                applyOperation({ type: 'impute', params }, `Imputed ${column} (method: ${method})`);
+            }
+        
+            function handleOutliers() {
+                const column = document.getElementById('outlierColumn').value;
+                const method = document.getElementById('outlierMethod').value;
+                const action = document.getElementById('outlierAction').value;
+                const params = { column, method, action };
+        
+                if (method === 'zscore') {
+                    const threshold = parseFloat(document.getElementById('zscoreThreshold').value);
+                    if (isNaN(threshold)) return alert('Invalid threshold.');
+                    params.threshold = threshold;
+                } else if (method === 'iqr') {
+                    const factor = parseFloat(document.getElementById('iqrFactor').value);
+                    if (isNaN(factor)) return alert('Invalid IQR factor.');
+                    params.factor = factor;
+                } else if (method === 'isolation_forest') {
+                    const cont = parseFloat(document.getElementById('contamination').value);
+                    if (isNaN(cont) || cont <= 0 || cont > 0.5) return alert('Contamination must be 0.01–0.5');
+                    params.contamination = cont;
+                }
+        
+                applyOperation({ type: 'outlier', params }, `Handled outliers in ${column} (method: ${method})`);
+            }
+        
+            function normalizeData() {
+                const column = document.getElementById('normalizeColumn').value;
+                const method = document.getElementById('normalizeMethod').value;
+                applyOperation({ type: 'normalize', params: { column, method } }, `Normalized ${column} (${method})`);
+            }
+        
+            function binData() {
+                const column = document.getElementById('binningColumn').value;
+                const method = document.getElementById('binningMethod').value;
+                const bins = parseInt(document.getElementById('binningBins').value);
+                if (isNaN(bins) || bins <= 0) return alert('Invalid number of bins.');
+                applyOperation({ type: 'binning', params: { column, method, bins } }, `Binned ${column} (${method}, ${bins})`);
+            }
+        
+            function cleanText() {
+                const column = document.getElementById('textColumn').value;
+                const action = document.getElementById('textAction').value;
+                applyOperation({ type: 'text_clean', params: { column, action } }, `Cleaned text in ${column} (${action})`);
+            }
+        
+            function deduplicate() {
+                const method = document.getElementById('dedupMethod').value;
+                const params = { method };
+        
+                if (method === 'exact') {
+                    const columns = Array.from(document.getElementById('dedupColumns').selectedOptions).map(opt => opt.value);
+                    if (!columns.length) return alert('Select columns for deduplication.');
+                    params.columns = columns;
+                } else if (method === 'fuzzy') {
+                    const column = document.getElementById('textColumn').value;
+                    const threshold = parseInt(document.getElementById('fuzzyThreshold').value);
+                    if (isNaN(threshold) || threshold < 0 || threshold > 100) return alert('Invalid fuzzy threshold (0-100).');
+                    params.column = column;
+                    params.threshold = threshold;
+                }
+        
+                applyOperation({ type: 'deduplicate', params }, `Deduplicated (${method})`);
+            }
+        
+            function convertType() {
+                const column = document.getElementById('convertColumn').value;
+                const type = document.getElementById('convertType').value;
+                applyOperation({ type: 'type_conversion', params: { column, type } }, `Converted ${column} to ${type}`);
+            }
+        
+            // Core function
+            function applyOperation(operation, description) {
+                if (!currentData) return alert('Upload data first.');
+        
+                fetch('/clean', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_content: currentData.file_content, operations: [operation] })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) return alert(data.error);
+        
+                    currentData.preview = data.preview;
+                    currentData.stats = data.stats;
+                    currentData.file_content = data.file_content;
+        
+                    displayDataPreview(data.preview);
+                    displayColumnStats(data.stats);
+                    addToHistory(description);
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Error applying operation.');
+                });
+            }
+        
+            function addToHistory(description) {
+                operationHistory.push({ time: new Date().toLocaleString(), description });
+                console.log('History:', operationHistory);
+            }
+        
+            // Download
+            function downloadData() {
+                if (!currentData) return alert('Nothing to download.');
+                const blob = new Blob([currentData.file_content], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'cleaned_data.csv';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        
+            // Reset
+            function resetData() {
+                if (!originalFile) return alert('No original file stored.');
+                if (!confirm('Reset all changes?')) return;
+        
+                const formData = new FormData();
+                formData.append('file', originalFile);
+        
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) return alert(data.error);
+        
+                    currentData = data;
+                    displayDataPreview(data.preview);
+                    displayColumnStats(data.stats);
+                    updateColumnSelects(data.columns);
+                    operationHistory = [];
+                    addToHistory('Data reset to original');
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Failed to reset.');
+                });
+            }
+        });
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,537 @@
+/* Base styles */
+body {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.progress {
+    height: 20px;
+}
+
+/* Feature selection */
+.feature-item {
+    margin-bottom: 10px;
+}
+
+.feature-checkbox {
+    margin-right: 8px;
+}
+
+/* Model evaluation cards */
+.evaluation-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+}
+
+/* Dark theme for preview */
+.dark-theme {
+    background-color: #343a40;
+    color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+/* Light theme for preview */
+.light-theme {
+    background-color: #f8f9fa;
+    color: #212529;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+/* Modern theme for preview */
+.modern-theme {
+    background-color: #f0f8ff;
+    color: #333;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Form layouts */
+.vertical-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.horizontal-form .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.horizontal-form .form-group label {
+    flex: 0 0 150px;
+    margin-right: 10px;
+}
+
+.horizontal-form .form-group input,
+.horizontal-form .form-group select {
+    flex: 1;
+}
+
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .horizontal-form .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .horizontal-form .form-group label {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+}
+
+/* Code display */
+.tab-content {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-top: none;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #f8f9fa;
+    border-color: #dee2e6 #dee2e6 #f8f9fa;
+}
+
+/* Force table text to pure white and uniform background */
+table, table th, table td {
+    color: #ffffff !important;
+    background-color: #2d2d2d !important;
+    border: 1px solid #444 !important;
+}
+
+/* Table header a bit darker */
+table th {
+    background-color: #333 !important;
+    font-weight: bold;
+}
+
+/* Row hover effect */
+table tr:hover td {
+    background-color: #3a3a3a !important;
+}
+
+/* Optional: make sure no Bootstrap 'muted' class ruins it */
+.table .text-muted, .text-muted {
+    color: #ffffff !important;
+}
+ /* Dark Theme Base */
+ body {
+    padding-top: 20px;
+    padding-bottom: 40px;
+    background-color: #000000;
+    color: #e0e0e0;
+}
+
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+.card-header {
+    font-weight: bold;
+    background-color: #333;
+    border-bottom-color: #444;
+    color: #f0f0f0;
+}
+
+.progress {
+    height: 20px;
+    background-color: #333;
+}
+
+.progress-bar {
+    background-color: #4a6baf;
+}
+
+/* Form elements */
+.form-control, .form-select {
+    background-color: #333;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #3a3a3a;
+    border-color: #555;
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(100, 100, 100, 0.25);
+}
+
+.form-text {
+    color: #999;
+}
+
+.form-check-input {
+    background-color: #333;
+    border-color: #555;
+}
+
+.form-check-input:checked {
+    background-color: #4a6baf;
+    border-color: #4a6baf;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #4a6baf;
+    border-color: #4a6baf;
+}
+
+.btn-primary:hover {
+    background-color: #3a5a9f;
+    border-color: #3a5a9f;
+}
+
+.btn-secondary {
+    background-color: #555;
+    border-color: #555;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #666;
+    border-color: #666;
+}
+
+.btn-success {
+    background-color: #2e7d32;
+    border-color: #2e7d32;
+}
+
+.btn-success:hover {
+    background-color: #1e6d22;
+    border-color: #1e6d22;
+}
+
+.btn-info {
+    background-color: #0277bd;
+    border-color: #0277bd;
+}
+
+.btn-info:hover {
+    background-color: #0167ad;
+    border-color: #0167ad;
+}
+
+.btn-outline-secondary {
+    border-color: #666;
+    color: #bbb;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #666;
+    border-color: #666;
+    color: #fff;
+}
+
+/* Feature selection */
+.feature-item {
+    margin-bottom: 10px;
+}
+
+.feature-checkbox {
+    margin-right: 8px;
+}
+
+/* Model evaluation cards */
+.evaluation-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #333;
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+}
+
+.toast {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+/* Warning/Alert colors */
+.alert-warning {
+    background-color: #5c4b00;
+    border-color: #7a6200;
+    color: #ffd54f;
+}
+
+.alert-danger {
+    background-color: #5c0000;
+    border-color: #7a0000;
+    color: #ff8a80;
+}
+
+.alert-success {
+    background-color: #1b5e20;
+    border-color: #2e7d32;
+    color: #a5d6a7;
+}
+
+/* Tabs */
+.nav-tabs {
+    border-bottom-color: #444;
+}
+
+.nav-tabs .nav-link {
+    color: #bbb;
+    background-color: #333;
+    border-color: #444 #444 #333;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: #555 #555 #333;
+    color: #e0e0e0;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #2d2d2d;
+    border-color: #444 #444 #2d2d2d;
+    color: #e0e0e0;
+}
+
+.tab-content {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+/* Code display */
+textarea.form-control {
+    background-color: #252525;
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+/* Tables */
+table {
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+table th {
+    background-color: #333;
+    border-color: #444;
+}
+
+table td {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+table tr:hover td {
+    background-color: #3a3a3a;
+}
+
+/* Preview themes */
+.dark-theme {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.light-theme {
+    background-color: #f8f9fa;
+    color: #212529;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.modern-theme {
+    background-color: #1e2a3a;
+    color: #e0e0e0;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Form layouts */
+.vertical-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.horizontal-form .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.horizontal-form .form-group label {
+    flex: 0 0 150px;
+    margin-right: 10px;
+    color: #e0e0e0;
+}
+
+.horizontal-form .form-group input,
+.horizontal-form .form-group select {
+    flex: 1;
+}
+
+.grid-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .horizontal-form .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .horizontal-form .form-group label {
+        margin-bottom: 0.5rem;
+        margin-right: 0;
+    }
+}
+
+/* Badges */
+.badge {
+    font-size: 0.7em;
+    vertical-align: middle;
+}
+
+.badge-primary {
+    background-color: #4a6baf;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+/* Borders */
+.border, .border-top, .border-bottom, .border-start, .border-end {
+    border-color: #444 !important;
+}
+
+/* Text colors */
+.text-muted {
+    color: #999 !important;
+}
+
+/* UI Preview section */
+#uiPreview {
+    background-color: #252525;
+    border-color: #444;
+}
+ /* Dark Theme Base */
+body {
+padding-top: 20px;
+padding-bottom: 40px;
+background-color: #000000;
+color: #ffffff; /* Pure white for better readability */
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+width: 10px;
+height: 10px;
+}
+::-webkit-scrollbar-track {
+background: #2d2d2d;
+}
+::-webkit-scrollbar-thumb {
+background: #555;
+border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #666;
+}
+
+/* Tables with white text and proper scrolling */
+.table-container {
+overflow-x: auto;
+max-width: 100%;
+margin-bottom: 1rem;
+border-radius: 4px;
+border: 1px solid #444;
+}
+
+table {
+width: 100%;
+color: #ffffff;
+border-collapse: collapse;
+margin-bottom: 0;
+}
+
+table th {
+background-color: #333;
+border: 1px solid #444;
+padding: 12px;
+text-align: left;
+position: sticky;
+top: 0;
+}
+
+table td {
+background-color: #2d2d2d;
+border: 1px solid #444;
+padding: 10px 12px;
+white-space: nowrap;
+}
+
+table tr:hover td {
+background-color: #3a3a3a;
+}
+
+/* Rest of your dark theme styles remain the same */
+.card {
+margin-bottom: 20px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+background-color: #2d2d2d;
+border-color: #444;
+}
+
+.card-header {
+font-weight: bold;
+background-color: #333;
+border-bottom-color: #444;
+color: #f0f0f0;
+}
+
+.progress {
+height: 20px;
+background-color: #333;
+}

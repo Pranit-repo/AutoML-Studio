@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploratory Data Analysis Toolkit</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #333;
+        }
+
+        .card-header {
+            background-color: #1a1a1a;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+            color: #ffffff;
+        }
+
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .badge {
+            font-weight: normal;
+        }
+
+        select[multiple] {
+            min-height: 100px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .operation-description {
+            flex-grow: 1;
+        }
+
+        .remove-operation {
+            flex-shrink: 0;
+        }
+
+        #resultsInfo ul {
+            padding-left: 20px;
+        }
+
+        #resultsInfo li {
+            margin-bottom: 10px;
+            color: #ffffff;
+        }
+
+        /* Additional dark theme styles */
+        .table {
+            color: #ffffff;
+            background-color: #000000;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: #1a1a1a;
+        }
+
+        .table-bordered {
+            border-color: #333;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border-color: #333;
+            color: #ffffff;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        .accordion-item {
+            background-color: #000000;
+            border-color: #333;
+        }
+
+        .accordion-button {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .accordion-body {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .list-group-item {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        .alert {
+            color: #ffffff;
+        }
+
+        .alert-success {
+            background-color: #155724;
+            border-color: #155724;
+            color: #ffffff;
+        }
+
+        .alert-danger {
+            background-color: #721c24;
+            border-color: #721c24;
+            color: #ffffff;
+        }
+
+        .alert-info {
+            background-color: #0c5460;
+            border-color: #0c5460;
+            color: #ffffff;
+        }
+
+        .alert-warning {
+            background-color: #856404;
+            border-color: #856404;
+            color: #ffffff;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        /* Visualization area styles */
+        #plotArea {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1a1a1a;
+            border-radius: 0.25rem;
+            border: 1px solid #333;
+            color: #ffffff;
+        }
+
+        #plotArea img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Table styling */
+        .table thead {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .table tbody tr {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #333;
+            color: #ffffff;
+        }
+
+        /* Form labels */
+        .form-label {
+            color: #ffffff;
+        }
+
+        /* Badges */
+        .badge {
+            color: #ffffff;
+        }
+
+        /* Headers */
+        h1, h2, h3, h4, h5, h6 {
+            color: #ffffff;
+        }
+
+        /* Text muted */
+        .text-muted {
+            color: #b3b3b3 !important;
+        }
+   
+            #dataPreviewContainer {
+                  max-height: 400px;
+                  overflow: auto;
+                  margin-top: 20px;
+                  border: 1px solid #ccc;
+                }
+                
+                .data-preview-table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  min-width: 600px; /* Ensures horizontal scroll for wide tables */
+                }
+                
+                .data-preview-table th,
+                .data-preview-table td {
+                  border: 1px solid #ccc;
+                  padding: 6px;
+                  text-align: left;
+                  white-space: nowrap; /* Prevents text from wrapping, triggers horizontal scroll */
+                }
+           
+               
+                
+                
+            
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center my-4">Exploratory Data Analysis Toolkit By AutoML Studio</h1>
+
+                <!-- File Upload Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>1. Upload Dataset</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Choose CSV or Excel file</label>
+                            <input class="form-control" type="file" id="fileInput" accept=".csv,.xlsx,.xls">
+                        </div>
+                        <button id="uploadBtn" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Upload
+                        </button>
+                        <div id="uploadStatus" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Dataset Preview -->
+                <div class="card mb-4 d-none" id="previewCard">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Dataset Preview</h5>
+                        <div>
+                            <span class="badge bg-secondary me-2" id="rowCount"></span>
+                            <span class="badge bg-secondary" id="colCount"></span>
+                            
+
+                        </div>
+                    </div>
+                    <div id="dataPreviewContainer" style="max-height: 400px; overflow: auto; margin-top: 20px;">
+                        <div id="dataPreview"></div>
+                      </div>
+                      
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered" id="previewTable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Tools -->
+                <div class="card mb-4 d-none" id="toolsCard">
+                    <div class="card-header">
+                        <h5>2. Analysis Tools</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="toolsAccordion">
+                            <!-- Descriptive Statistics -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#descriptiveStatsCollapse">
+                                        Descriptive Statistics
+                                    </button>
+                                </h2>
+                                <div id="descriptiveStatsCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#toolsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Column</label>
+                                                <select class="form-select" id="descStatsColumn">
+                                                    <option value="">Select Column</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button class="btn btn-primary mt-4" id="calculateStatsBtn">Calculate Statistics</button>
+                                            </div>
+                                        </div>
+                                        <div id="statsResults"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Visualizations -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#visualizationCollapse">
+                                        Visualizations
+                                    </button>
+                                </h2>
+                                <div id="visualizationCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#toolsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Plot Type</label>
+                                                <select class="form-select" id="plotType">
+                                                    <option value="">Select Plot Type</option>
+                                                   <option value="histogram">Histogram</option>
+                                            <option value="boxplot">Box Plot</option>
+                                            <option value="scatter">Scatter Plot</option>
+                                            <option value="line">Line Plot</option>
+                                            <option value="bar">Bar Chart</option>
+                                            <option value="pie">Pie Chart</option>
+                                            <option value="heatmap">Heatmap</option>
+                                            <option value="pairplot">Pair Plot</option>
+                                            
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div id="plotOptions"></div>
+                                        <button class="btn btn-primary mt-2" id="generatePlotBtn">Generate Plot</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Missing Data -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#missingDataCollapse">
+                                        Missing Data Analysis
+                                    </button>
+                                </h2>
+                                <div id="missingDataCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#toolsAccordion">
+                                    <div class="accordion-body">
+                                        <button class="btn btn-primary" id="showMissingBtn">Show Missing Data</button>
+                                        <div id="missingDataResults" class="mt-3"></div>
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <label class="form-label">Handling Strategy</label>
+                                                <select class="form-select" id="missingAction">
+                                                    <option value="">Select Action</option>
+                                                    <option value="drop">Drop Missing</option>
+                                                    <option value="mean">Fill with Mean</option>
+                                                    <option value="median">Fill with Median</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <button class="btn btn-primary mt-4" id="handleMissingBtn">Apply</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Outlier Detection -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#outliersCollapse">
+                                        Outlier Detection
+                                    </button>
+                                </h2>
+                                <div id="outliersCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#toolsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Column</label>
+                                                <select class="form-select" id="outlierColumn">
+                                                    <option value="">Select Column</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="outlierMethod">
+                                                    <option value="zscore">Z-Score</option>
+                                                    <option value="iqr">IQR</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div id="outlierParams"></div>
+                                        <button class="btn btn-primary" id="detectOutliersBtn">Detect Outliers</button>
+                                        <div id="outlierResults" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Correlation Analysis -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#correlationCollapse">
+                                        Correlation Analysis
+                                    </button>
+                                </h2>
+                                <div id="correlationCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#toolsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="correlationMethod">
+                                                    <option value="pearson">Pearson</option>
+                                                    <option value="spearman">Spearman</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">First Column</label>
+                                                <select class="form-select" id="correlationCol1">
+                                                    <option value="">Select Column</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Second Column</label>
+                                                <select class="form-select" id="correlationCol2">
+                                                    <option value="">Select Column</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="calculateCorrelationBtn">Calculate Correlation</button>
+                                        <div id="correlationResults" class="mt-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visualization Area -->
+                <div class="card mb-4 d-none" id="visualizationCard">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>3. Visualization</h5>
+                        <div>
+                            <button id="downloadPlotBtn" class="btn btn-sm btn-outline-secondary" disabled>
+                                <i class="bi bi-download"></i> Download
+                            </button>
+                            <button id="clearPlotBtn" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="plotArea" class="text-center">
+                            <p class="text-muted">Select a visualization type to generate a plot.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Area -->
+                <div class="card mb-4 d-none" id="resultsCard">
+                    <div class="card-header">
+                        <h5>4. Analysis Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultsArea"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const previewCard = document.getElementById('previewCard');
+            const previewTable = document.getElementById('previewTable');
+            const rowCount = document.getElementById('rowCount');
+            const colCount = document.getElementById('colCount');
+            const toolsCard = document.getElementById('toolsCard');
+            const visualizationCard = document.getElementById('visualizationCard');
+            const resultsCard = document.getElementById('resultsCard');
+            const plotArea = document.getElementById('plotArea');
+            const resultsArea = document.getElementById('resultsArea');
+            const downloadPlotBtn = document.getElementById('downloadPlotBtn');
+            const clearPlotBtn = document.getElementById('clearPlotBtn');
+            
+            // Data variables
+            let currentData = null;
+            let currentPlot = null;
+            
+            // Initialize tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+            
+            // Event listeners
+            uploadBtn.addEventListener('click', handleFileUpload);
+            clearPlotBtn.addEventListener('click', clearPlot);
+            downloadPlotBtn.addEventListener('click', downloadPlot);
+            
+            // Initialize functionality
+            initDescriptiveStats();
+            initVisualizations();
+            initMissingData();
+            initOutlierDetection();
+            initCorrelationAnalysis();
+            
+            // File upload handler
+            function handleFileUpload() {
+                if (!fileInput.files.length) {
+                    showAlert('Please select a file first', 'danger');
+                    return;
+                }
+                
+                uploadBtn.disabled = true;
+                uploadStatus.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+                
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    currentData = data;
+                    displayPreview(data.preview);
+                    updateColumnSelects();
+                    
+                    // Show all cards
+                    previewCard.classList.remove('d-none');
+                    toolsCard.classList.remove('d-none');
+                    visualizationCard.classList.remove('d-none');
+                    resultsCard.classList.remove('d-none');
+                    
+                    uploadStatus.innerHTML = '<div class="alert alert-success">File uploaded successfully!</div>';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    uploadStatus.innerHTML = '<div class="alert alert-danger">Error uploading file: ' + error.message + '</div>';
+                })
+                .finally(() => {
+                    uploadBtn.disabled = false;
+                });
+            }
+            
+            // Display dataset preview
+            function displayPreview(previewData) {
+                if (!previewData || previewData.length === 0) {
+                    console.error('No preview data available');
+                    return;
+                }
+                
+                // Clear existing table
+                previewTable.innerHTML = '';
+                
+                // Create table header
+                const thead = document.createElement('thead');
+                thead.className = 'table-dark';
+                const headerRow = document.createElement('tr');
+                
+                // Get column names from first row of preview data
+                const columns = Object.keys(previewData[0]);
+                
+                columns.forEach(col => {
+                    const th = document.createElement('th');
+                    th.style.backgroundColor = '#000000';
+                    th.style.color = '#ffffff';
+                    
+                    // Create a flex container for column header
+                    const div = document.createElement('div');
+                    div.style.display = "flex";
+                    div.style.flexDirection = "column";
+                    div.style.alignItems = "flex-start";
+                    
+                    // Column name
+                    const colText = document.createElement('span');
+                    colText.textContent = col;
+                    colText.style.color = "#ffffff";
+                    div.appendChild(colText);
+                    
+                    // Data type badge
+                    if (currentData.dtypes && currentData.dtypes[col]) {
+                        const dtypeBadge = document.createElement('span');
+                        dtypeBadge.className = 'badge bg-secondary mt-1';
+                        dtypeBadge.textContent = currentData.dtypes[col].includes('object') ? 'text' : currentData.dtypes[col];
+                        div.appendChild(dtypeBadge);
+                    }
+                    
+                    // Missing values badge
+                    if (currentData.null_counts && currentData.null_counts[col] > 0) {
+                        const missingBadge = document.createElement('span');
+                        missingBadge.className = 'badge bg-warning mt-1';
+                        missingBadge.textContent = currentData.null_counts[col] + ' missing';
+                        div.appendChild(missingBadge);
+                    }
+                    
+                    th.appendChild(div);
+                    headerRow.appendChild(th);
+                });
+                
+                thead.appendChild(headerRow);
+                previewTable.appendChild(thead);
+                
+                // Create table body
+                const tbody = document.createElement('tbody');
+                
+                previewData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.style.backgroundColor = '#121212';
+                    
+                    columns.forEach(col => {
+                        const td = document.createElement('td');
+                        td.textContent = row[col] !== null && row[col] !== undefined ? row[col] : 'NA';
+                        td.style.color = "#ffffff";
+                        td.style.backgroundColor = "#121212";
+                        tr.appendChild(td);
+                    });
+                    
+                    tbody.appendChild(tr);
+                });
+                
+                previewTable.appendChild(tbody);
+                
+                // Update counts
+                rowCount.textContent = previewData.length + ' rows';
+                colCount.textContent = columns.length + ' columns';
+            }
+            
+            // Update column selection dropdowns
+            function updateColumnSelects() {
+                if (!currentData || !currentData.columns) {
+                    console.error('No columns data available');
+                    return;
+                }
+                
+                const columnSelects = document.querySelectorAll('select[id$="Column"], select[id$="Col1"], select[id$="Col2"]');
+                columnSelects.forEach(select => {
+                    // Save current value
+                    const currentValue = select.value;
+                    
+                    // Clear and repopulate
+                    select.innerHTML = '<option value="">Select Column</option>';
+                    currentData.columns.forEach(col => {
+                        const option = document.createElement('option');
+                        option.value = col;
+                        option.textContent = col;
+                        select.appendChild(option);
+                    });
+                    
+                    // Restore selection if still valid
+                    if (currentValue && currentData.columns.includes(currentValue)) {
+                        select.value = currentValue;
+                    }
+                });
+            }
+            
+            // Clear the plot area
+            function clearPlot() {
+                plotArea.innerHTML = '<p class="text-muted">Select a visualization type to generate a plot.</p>';
+                downloadPlotBtn.disabled = true;
+                currentPlot = null;
+            }
+            
+            // Download the current plot
+            function downloadPlot() {
+                if (!currentPlot) return;
+                
+                const link = document.createElement('a');
+                link.href = currentPlot;
+                link.download = 'eda_plot.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            
+            // Show alert message
+            function showAlert(message, type) {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.role = 'alert';
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                const container = document.createElement('div');
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '11';
+                container.appendChild(alert);
+                
+                document.body.appendChild(container);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    container.remove();
+                }, 5000);
+            }
+            
+            // Initialize descriptive statistics functionality
+            function initDescriptiveStats() {
+                const descStatsColumn = document.getElementById('descStatsColumn');
+                const calculateStatsBtn = document.getElementById('calculateStatsBtn');
+                const statsResults = document.getElementById('statsResults');
+                
+                calculateStatsBtn.addEventListener('click', function() {
+                    if (!descStatsColumn.value) {
+                        showAlert('Please select a column first', 'warning');
+                        return;
+                    }
+                    
+                    calculateStatsBtn.disabled = true;
+                    calculateStatsBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculating...';
+                    
+                    fetch('/descriptive_stats', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            column: descStatsColumn.value
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            statsResults.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                            return;
+                        }
+                        
+                        let html = `
+                            <div class="card bg-dark">
+                                <div class="card-header">
+                                    <h6>Descriptive Statistics for ${descStatsColumn.value}</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                        `;
+                        
+                       // Basic stats
+                       html += `
+                            
+                       <div class="col-md-6">
+                           <table class="table table-sm table-bordered" style="background-color: #333; color: white;">
+                               <tbody>
+                                   <tr><th style="color: white; background:#121212;">Mean</th><td style="color: white; background:#121212;">${data.mean.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Median</th><td style="color: white; background:#121212;">${data.median.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Mode</th><td style="color: white; background:#121212;">${data.mode.join(', ')}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Standard Deviation</th><td style="color: white; background:#121212;">${data.std.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Minimum</th><td style="color: white; background:#121212;">${data.min.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Maximum</th><td style="color: white; background:#121212;">${data.max.toFixed(4)}</td></tr>
+                               </tbody>
+                           </table>
+                       </div>
+                       <div class="col-md-6">
+                           <table class="table table-sm table-bordered" style="background-color: #333; color: white;">
+                               <tbody>
+                                   <tr><th style="color: white; background:#121212;">First Quartile (Q1)</th><td style="color: white; background:#121212;">${data.q1.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Third Quartile (Q3)</th><td style="color: white; background:#121212;">${data.q3.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Interquartile Range (IQR)</th><td style="color: white; background:#121212;">${(data.q3 - data.q1).toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Skewness</th><td style="color: white; background:#121212;">${data.skewness.toFixed(4)}</td></tr>
+                                   <tr><th style="color: white; background:#121212;">Kurtosis</th><td style="color: white; background:#121212;">${data.kurtosis.toFixed(4)}</td></tr>
+                               </tbody>
+                           </table>
+                       </div>
+                   `;
+                   
+                        
+                        html += `
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        statsResults.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        statsResults.innerHTML = '<div class="alert alert-danger">Error calculating statistics</div>';
+                    })
+                    .finally(() => {
+                        calculateStatsBtn.disabled = false;
+                        calculateStatsBtn.textContent = 'Calculate Statistics';
+                    });
+                });
+            }
+            
+            // Initialize visualizations functionality
+            function initVisualizations() {
+                const plotType = document.getElementById('plotType');
+                const plotOptions = document.getElementById('plotOptions');
+                const generatePlotBtn = document.getElementById('generatePlotBtn');
+                
+                plotType.addEventListener('change', function() {
+                    updatePlotOptions();
+                });
+                
+                generatePlotBtn.addEventListener('click', function() {
+                    if (!plotType.value) {
+                        showAlert('Please select a plot type first', 'warning');
+                        return;
+                    }
+                    
+                    generatePlotBtn.disabled = true;
+                    generatePlotBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...';
+                    
+                    const plotData = {
+                        plot_type: plotType.value
+                    };
+                    
+                    // Add optional parameters
+                    const xCol = document.getElementById('plotXColumn');
+                    if (xCol && xCol.value) plotData.x_col = xCol.value;
+                    
+                    const yCol = document.getElementById('plotYColumn');
+                    if (yCol && yCol.value) plotData.y_col = yCol.value;
+                    
+                    const hueCol = document.getElementById('plotHueColumn');
+                    if (hueCol && hueCol.value) plotData.hue_col = hueCol.value;
+                    
+                    // Plot-specific parameters
+                    if (plotType.value === 'histogram') {
+                        const bins = document.getElementById('histBins');
+                        if (bins && bins.value) plotData.bins = bins.value;
+                    }
+                    
+                    fetch('/plot', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(plotData)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            plotArea.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                            downloadPlotBtn.disabled = true;
+                            return;
+                        }
+                        
+                        plotArea.innerHTML = `<img src="${data.image}" class="img-fluid" alt="Generated Plot">`;
+                        downloadPlotBtn.disabled = false;
+                        currentPlot = data.image;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        plotArea.innerHTML = '<div class="alert alert-danger">Error generating plot</div>';
+                        downloadPlotBtn.disabled = true;
+                    })
+                    .finally(() => {
+                        generatePlotBtn.disabled = false;
+                        generatePlotBtn.textContent = 'Generate Plot';
+                    });
+                });
+                
+                function updatePlotOptions() {
+                    plotOptions.innerHTML = '';
+                    
+                    if (!plotType.value) return;
+                    
+                    // Always show X column selector
+                    const xColDiv = document.createElement('div');
+                    xColDiv.className = 'mb-2';
+                    xColDiv.innerHTML = `
+                        <label class="form-label">X-Axis Column</label>
+                        <select id="plotXColumn" class="form-select">
+                            <option value="">Select Column</option>
+                            ${currentData ? currentData.columns.map(col => `<option value="${col}">${col}</option>`).join('') : ''}
+                        </select>
+                    `;
+                    plotOptions.appendChild(xColDiv);
+                    
+                    // Show Y column selector for certain plot types
+                    if (['scatter', 'boxplot'].includes(plotType.value)) {
+                        const yColDiv = document.createElement('div');
+                        yColDiv.className = 'mb-2';
+                        yColDiv.innerHTML = `
+                            <label class="form-label">Y-Axis Column</label>
+                            <select id="plotYColumn" class="form-select">
+                                <option value="">Select Column</option>
+                                ${currentData ? currentData.columns.map(col => `<option value="${col}">${col}</option>`).join('') : ''}
+                            </select>
+                        `;
+                        plotOptions.appendChild(yColDiv);
+                    }
+                    
+                    // Show hue selector for certain plot types
+                    if (['scatter'].includes(plotType.value)) {
+                        const hueColDiv = document.createElement('div');
+                        hueColDiv.className = 'mb-2';
+                        hueColDiv.innerHTML = `
+                            <label class="form-label">Hue Column (Color By)</label>
+                            <select id="plotHueColumn" class="form-select">
+                                <option value="">None</option>
+                                ${currentData ? currentData.columns.map(col => `<option value="${col}">${col}</option>`).join('') : ''}
+                            </select>
+                        `;
+                        plotOptions.appendChild(hueColDiv);
+                    }
+                    
+                    // Show bins selector for histogram
+                    if (plotType.value === 'histogram') {
+                        const binsDiv = document.createElement('div');
+                        binsDiv.className = 'mb-2';
+                        binsDiv.innerHTML = `
+                            <label class="form-label">Number of Bins</label>
+                            <input type="number" id="histBins" class="form-control" value="10" min="1">
+                        `;
+                        plotOptions.appendChild(binsDiv);
+                    }
+                }
+            }
+            
+            // Initialize missing data functionality
+            function initMissingData() {
+                const showMissingBtn = document.getElementById('showMissingBtn');
+                const missingDataResults = document.getElementById('missingDataResults');
+                const missingAction = document.getElementById('missingAction');
+                const handleMissingBtn = document.getElementById('handleMissingBtn');
+                
+                showMissingBtn.addEventListener('click', function() {
+                    if (!currentData) {
+                        showAlert('Please upload data first', 'warning');
+                        return;
+                    }
+                    
+                    showMissingBtn.disabled = true;
+                    showMissingBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+                    
+                    let html = `
+                        <div class="card bg-dark">
+                            <div class="card-header">
+                                <h6>Missing Data Summary</h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Column</th>
+                                            <th>Missing Values</th>
+                                            <th>Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                    `;
+                    
+                    for (const [col, count] of Object.entries(currentData.null_counts)) {
+                        const percentage = (count / currentData.shape[0] * 100).toFixed(2);
+                        html += `
+                            <tr>
+                                <td>${col}</td>
+                                <td>${count}</td>
+                                <td>${percentage}%</td>
+                            </tr>
+                        `;
+                    }
+                    
+                    html += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    `;
+                    
+                    missingDataResults.innerHTML = html;
+                    showMissingBtn.disabled = false;
+                    showMissingBtn.textContent = 'Show Missing Data';
+                });
+                
+                handleMissingBtn.addEventListener('click', function() {
+                    if (!missingAction.value) {
+                        showAlert('Please select an action first', 'warning');
+                        return;
+                    }
+                    
+                    // In a real app, this would send a request to the server
+                    showAlert(`Action "${missingAction.value}" would be performed on the server`, 'info');
+                });
+            }
+            
+            // Initialize outlier detection functionality
+            function initOutlierDetection() {
+                const outlierColumn = document.getElementById('outlierColumn');
+                const outlierMethod = document.getElementById('outlierMethod');
+                const outlierParams = document.getElementById('outlierParams');
+                const detectOutliersBtn = document.getElementById('detectOutliersBtn');
+                const outlierResults = document.getElementById('outlierResults');
+                
+                outlierMethod.addEventListener('change', updateOutlierParams);
+                
+                detectOutliersBtn.addEventListener('click', function() {
+                    if (!outlierColumn.value) {
+                        showAlert('Please select a column first', 'warning');
+                        return;
+                    }
+                    
+                    detectOutliersBtn.disabled = true;
+                    detectOutliersBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Detecting...';
+                    
+                    const params = {
+                        column: outlierColumn.value,
+                        method: outlierMethod.value
+                    };
+                    
+                    // Add method-specific parameters
+                    if (outlierMethod.value === 'zscore') {
+                        const threshold = document.getElementById('zscoreThreshold');
+                        if (threshold && threshold.value) params.threshold = parseFloat(threshold.value);
+                    }
+                    
+                    fetch('/outliers', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(params)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            outlierResults.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                            return;
+                        }
+                        
+                        let html = `
+                            <div class="card bg-dark">
+                                <div class="card-header">
+                                    <h6>Outlier Detection Results</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p>Found ${data.count} outliers (${data.percentage.toFixed(2)}% of data)</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Index</th>
+                                                    <th>Value</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                        `;
+                        
+                        data.outliers.forEach((value, index) => {
+                            html += `
+                                <tr>
+                                    <td>${index}</td>
+                                    <td>${value}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += `
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        outlierResults.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        outlierResults.innerHTML = '<div class="alert alert-danger">Error detecting outliers</div>';
+                    })
+                    .finally(() => {
+                        detectOutliersBtn.disabled = false;
+                        detectOutliersBtn.textContent = 'Detect Outliers';
+                    });
+                });
+                
+                function updateOutlierParams() {
+                    outlierParams.innerHTML = '';
+                    
+                    if (outlierMethod.value === 'zscore') {
+                        outlierParams.innerHTML = `
+                            <div class="mb-2">
+                                <label class="form-label">Z-Score Threshold</label>
+                                <input type="number" id="zscoreThreshold" class="form-control" value="3" step="0.1" min="1">
+                            </div>
+                        `;
+                    }
+                }
+            }
+            
+            // Initialize correlation analysis functionality
+            function initCorrelationAnalysis() {
+                const correlationMethod = document.getElementById('correlationMethod');
+                const correlationCol1 = document.getElementById('correlationCol1');
+                const correlationCol2 = document.getElementById('correlationCol2');
+                const calculateCorrelationBtn = document.getElementById('calculateCorrelationBtn');
+                const correlationResults = document.getElementById('correlationResults');
+                
+                calculateCorrelationBtn.addEventListener('click', function() {
+                    if (!correlationCol1.value || !correlationCol2.value) {
+                        showAlert('Please select both columns first', 'warning');
+                        return;
+                    }
+                    
+                    calculateCorrelationBtn.disabled = true;
+                    calculateCorrelationBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculating...';
+                    
+                    fetch('/correlation', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            method: correlationMethod.value,
+                            col1: correlationCol1.value,
+                            col2: correlationCol2.value
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            correlationResults.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                            return;
+                        }
+                        
+                        let methodName = '';
+                        switch(data.method) {
+                            case 'pearson': methodName = 'Pearson Correlation'; break;
+                            case 'spearman': methodName = 'Spearman Rank Correlation'; break;
+                        }
+                        
+                        const html = `
+                            <div class="card bg-dark">
+                                <div class="card-header">
+                                    <h6>${methodName} Results</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-sm table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>Correlation Coefficient</th>
+                                                <td>${data.correlation.toFixed(4)}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>p-value</th>
+                                                <td>${data.p_value.toFixed(6)}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Interpretation</th>
+                                                <td>${interpretCorrelation(data.correlation)}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                        
+                        correlationResults.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        correlationResults.innerHTML = '<div class="alert alert-danger">Error calculating correlation</div>';
+                    })
+                    .finally(() => {
+                        calculateCorrelationBtn.disabled = false;
+                        calculateCorrelationBtn.textContent = 'Calculate Correlation';
+                    });
+                });
+                
+                function interpretCorrelation(value) {
+                    const absValue = Math.abs(value);
+                    if (absValue >= 0.8) return 'Very strong relationship';
+                    if (absValue >= 0.6) return 'Strong relationship';
+                    if (absValue >= 0.4) return 'Moderate relationship';
+                    if (absValue >= 0.2) return 'Weak relationship';
+                    return 'Very weak or no relationship';
+                }
+            }
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+        
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const rows = text.trim().split('\n');
+                const table = document.createElement('table');
+                table.classList.add('data-preview-table');
+        
+                const maxRows = 10;
+                rows.slice(0, maxRows).forEach((row, index) => {
+                    const tr = document.createElement('tr');
+                    const cols = row.split(',');
+                    cols.forEach(cell => {
+                        const td = document.createElement(index === 0 ? 'th' : 'td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+        
+                const preview = document.getElementById('dataPreview');
+                preview.innerHTML = ''; // clear previous
+                preview.appendChild(table);
+            };
+        
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>

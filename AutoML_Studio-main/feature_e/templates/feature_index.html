@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Engineering Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="/static/style.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid #333;
+        }
+
+        .card-header {
+            background-color: #1a1a1a;
+            font-weight: bold;
+            border-bottom: 1px solid #333;
+        }
+
+        .table-responsive {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .badge {
+            font-weight: normal;
+        }
+
+        select[multiple] {
+            min-height: 100px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .operation-description {
+            flex-grow: 1;
+        }
+
+        .remove-operation {
+            flex-shrink: 0;
+        }
+
+        #resultsInfo ul {
+            padding-left: 20px;
+        }
+
+        #resultsInfo li {
+            margin-bottom: 10px;
+        }
+
+        /* Additional dark theme styles */
+        .table {
+            color: #ffffff;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: #1a1a1a;
+        }
+
+        .table-bordered {
+            border-color: #333;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border-color: #333;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        .accordion-item {
+            background-color: #000000;
+            border-color: #333;
+        }
+
+        .accordion-button {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        .accordion-body {
+            background-color: #000000;
+        }
+
+        .list-group-item {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border-color: #333;
+        }
+
+        .alert {
+            color: #ffffff;
+        }
+
+        .alert-success {
+            background-color: #155724;
+            border-color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #721c24;
+            border-color: #721c24;
+        }
+
+        .alert-info {
+            background-color: #0c5460;
+            border-color: #0c5460;
+        }
+
+        .alert-warning {
+            background-color: #856404;
+            border-color: #856404;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        /* --- Correct dark theme for table --- */
+        .table {
+            color: #ffffff;
+        }
+
+        .table thead {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        .table tbody tr {
+            background-color: #121212;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: #1a1a1a;
+        }
+
+        .table-bordered {
+            border-color: #333;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border-color: #333;
+        }
+
+        /* make sure text inside all cells is white */
+        .table td,
+        .table th {
+            color: #ffffff;
+        }
+
+        /* fix padding and smooth borders */
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center my-4">Feature Engineering Tool By AutoML Studio</h1>
+
+                <!-- File Upload Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>1. Upload Dataset</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Choose CSV file</label>
+                            <input class="form-control" type="file" id="fileInput" accept=".csv">
+                        </div>
+                        <button id="uploadBtn" class="btn btn-primary">
+                            <i class="bi bi-upload"></i> Upload
+                        </button>
+                        <div id="uploadStatus" class="mt-3"></div>
+                    </div>
+                </div>
+
+                <!-- Dataset Preview -->
+                <div class="card mb-4 d-none" id="previewCard">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Dataset Preview</h5>
+                        <div>
+                            <span class="badge bg-secondary me-2" id="rowCount"></span>
+                            <span class="badge bg-secondary" id="colCount"></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered" id="previewTable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Engineering Operations -->
+                <div class="card mb-4 d-none" id="operationsCard">
+                    <div class="card-header">
+                        <h5>2. Feature Engineering Operations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="accordion" id="operationsAccordion">
+                            <!-- Missing Values Handling -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#missingCollapse">
+                                        Missing Values Handling
+                                    </button>
+                                </h2>
+                                <div id="missingCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Columns</label>
+                                                <select class="form-select" id="missingColumns" multiple></select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Strategy</label>
+                                                <select class="form-select" id="missingStrategy">
+                                                    <option value="mean">Mean Imputation</option>
+                                                    <option value="median">Median Imputation</option>
+                                                    <option value="mode">Mode Imputation</option>
+                                                    <option value="constant">Constant Value</option>
+                                                    <option value="knn">KNN Imputation</option>
+                                                    <option value="drop">Drop Rows</option>
+                                                    <option value="flag">Flag + Impute</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="missingConstantContainer" style="display: none;">
+                                                <label class="form-label">Constant Value</label>
+                                                <input type="number" class="form-control" id="missingConstant"
+                                                    value="0">
+                                            </div>
+                                            <div class="col-md-4" id="missingKNNContainer" style="display: none;">
+                                                <label class="form-label">Neighbors</label>
+                                                <input type="number" class="form-control" id="missingKNN" value="5"
+                                                    min="1">
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addMissingBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Encoding Categorical Variables -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#encodingCollapse">
+                                        Encoding Categorical Variables
+                                    </button>
+                                </h2>
+                                <div id="encodingCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Columns</label>
+                                                <select class="form-select" id="encodingColumns" multiple></select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="encodingMethod">
+                                                    <option value="onehot">One-Hot Encoding</option>
+                                                    <option value="label">Label Encoding</option>
+                                                    <option value="target">Target Encoding</option>
+                                                    <option value="frequency">Frequency Encoding</option>
+                                                    <option value="binary">Binary Encoding</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="encodingTargetContainer" style="display: none;">
+                                                <label class="form-label">Target Column</label>
+                                                <select class="form-select" id="encodingTarget"></select>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addEncodingBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feature Scaling -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#scalingCollapse">
+                                        Feature Scaling
+                                    </button>
+                                </h2>
+                                <div id="scalingCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Columns</label>
+                                                <select class="form-select" id="scalingColumns" multiple></select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="scalingMethod">
+                                                    <option value="standard">Standard (Z-score)</option>
+                                                    <option value="minmax">Min-Max</option>
+                                                    <option value="robust">Robust</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="scalingRangeContainer" style="display: none;">
+                                                <label class="form-label">Range</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="scalingMin" value="0"
+                                                        step="0.1">
+                                                    <span class="input-group-text">to</span>
+                                                    <input type="number" class="form-control" id="scalingMax" value="1"
+                                                        step="0.1">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addScalingBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feature Transformation -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#transformationCollapse">
+                                        Feature Transformation
+                                    </button>
+                                </h2>
+                                <div id="transformationCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Columns</label>
+                                                <select class="form-select" id="transformationColumns"
+                                                    multiple></select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="transformationMethod">
+                                                    <option value="log">Log Transformation</option>
+                                                    <option value="sqrt">Square Root</option>
+                                                    <option value="boxcox">Box-Cox</option>
+                                                    <option value="yeojohnson">Yeo-Johnson</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addTransformationBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feature Selection -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#selectionCollapse">
+                                        Feature Selection
+                                    </button>
+                                </h2>
+                                <div id="selectionCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="selectionMethod">
+                                                    <option value="variance">Variance Threshold</option>
+                                                    <option value="correlation">Remove Correlated</option>
+                                                    <option value="kbest">SelectKBest</option>
+                                                    <option value="rfe">Recursive Feature Elimination</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="selectionTargetContainer" style="display: none;">
+                                                <label class="form-label">Target Column</label>
+                                                <select class="form-select" id="selectionTarget"></select>
+                                            </div>
+                                            <div class="col-md-4" id="selectionKContainer">
+                                                <label class="form-label">Number of Features (k)</label>
+                                                <input type="number" class="form-control" id="selectionK" value="5"
+                                                    min="1">
+                                            </div>
+                                            <div class="col-md-4" id="selectionThresholdContainer"
+                                                style="display: none;">
+                                                <label class="form-label">Threshold</label>
+                                                <input type="number" class="form-control" id="selectionThreshold"
+                                                    value="0.8" step="0.01" min="0" max="1">
+                                            </div>
+                                            <div class="col-md-4" id="selectionScoreFuncContainer"
+                                                style="display: none;">
+                                                <label class="form-label">Score Function</label>
+                                                <select class="form-select" id="selectionScoreFunc">
+                                                    <option value="f_classif">ANOVA F-value</option>
+                                                    <option value="chi2">Chi-squared</option>
+                                                    <option value="mutual_info">Mutual Information</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addSelectionBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Outlier Handling -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#outliersCollapse">
+                                        Outlier Handling
+                                    </button>
+                                </h2>
+                                <div id="outliersCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Columns</label>
+                                                <select class="form-select" id="outliersColumns" multiple></select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="outliersMethod">
+                                                    <option value="clip">Clip Values</option>
+                                                    <option value="remove">Remove Outliers</option>
+                                                    <option value="transform">Log Transform</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="outliersRangeContainer" style="display: none;">
+                                                <label class="form-label">Range (percentiles)</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="outliersLower"
+                                                        value="5" min="0" max="100">
+                                                    <span class="input-group-text">to</span>
+                                                    <input type="number" class="form-control" id="outliersUpper"
+                                                        value="95" min="0" max="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addOutliersBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dimensionality Reduction -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#dimensionalityCollapse">
+                                        Dimensionality Reduction
+                                    </button>
+                                </h2>
+                                <div id="dimensionalityCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="dimensionalityMethod">
+                                                    <option value="pca">Principal Component Analysis (PCA)</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Number of Components</label>
+                                                <input type="number" class="form-control" id="dimensionalityComponents"
+                                                    value="2" min="1">
+                                            </div>
+                                            <div class="col-md-4" id="dimensionalityTargetContainer">
+                                                <label class="form-label">Target Column (optional)</label>
+                                                <select class="form-select" id="dimensionalityTarget">
+                                                    <option value="">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addDimensionalityBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Feature Creation -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#creationCollapse">
+                                        Feature Creation
+                                    </button>
+                                </h2>
+                                <div id="creationCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Operation</label>
+                                                <select class="form-select" id="creationOperation">
+                                                    <option value="interaction">Interaction Feature</option>
+                                                    <option value="polynomial">Polynomial Feature</option>
+                                                    <option value="aggregation">Aggregation Feature</option>
+                                                    <option value="datetime">Datetime Feature</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">New Feature Name</label>
+                                                <input type="text" class="form-control" id="creationNewFeature">
+                                            </div>
+                                            <div class="col-md-4" id="creationInteractionContainer">
+                                                <label class="form-label">Columns</label>
+                                                <select class="form-select" id="creationInteractionCol1"></select>
+                                                <select class="form-select mt-2" id="creationInteractionCol2"></select>
+                                            </div>
+                                            <div class="col-md-4" id="creationPolynomialContainer"
+                                                style="display: none;">
+                                                <label class="form-label">Column</label>
+                                                <select class="form-select" id="creationPolynomialCol"></select>
+                                                <label class="form-label mt-2">Degree</label>
+                                                <input type="number" class="form-control" id="creationPolynomialDegree"
+                                                    value="2" min="1">
+                                            </div>
+                                            <div class="col-md-4" id="creationAggregationContainer"
+                                                style="display: none;">
+                                                <label class="form-label">Group Column</label>
+                                                <select class="form-select" id="creationAggregationGroup"></select>
+                                                <label class="form-label mt-2">Aggregation Column</label>
+                                                <select class="form-select" id="creationAggregationCol"></select>
+                                                <label class="form-label mt-2">Function</label>
+                                                <select class="form-select" id="creationAggregationFunc">
+                                                    <option value="mean">Mean</option>
+                                                    <option value="sum">Sum</option>
+                                                    <option value="max">Max</option>
+                                                    <option value="min">Min</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4" id="creationDatetimeContainer" style="display: none;">
+                                                <label class="form-label">Datetime Column</label>
+                                                <select class="form-select" id="creationDatetimeCol"></select>
+                                                <label class="form-label mt-2">Part to Extract</label>
+                                                <select class="form-select" id="creationDatetimePart">
+                                                    <option value="year">Year</option>
+                                                    <option value="month">Month</option>
+                                                    <option value="day">Day</option>
+                                                    <option value="hour">Hour</option>
+                                                    <option value="weekday">Weekday</option>
+                                                    <option value="quarter">Quarter</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addCreationBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Binning -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#binningCollapse">
+                                        Binning/Discretization
+                                    </button>
+                                </h2>
+                                <div id="binningCollapse" class="accordion-collapse collapse"
+                                    data-bs-parent="#operationsAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <label class="form-label">Column</label>
+                                                <select class="form-select" id="binningColumn"></select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">Method</label>
+                                                <select class="form-select" id="binningMethod">
+                                                    <option value="equal_width">Equal Width</option>
+                                                    <option value="equal_freq">Equal Frequency</option>
+                                                    <option value="custom">Custom Bins</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">New Feature Name</label>
+                                                <input type="text" class="form-control" id="binningNewFeature"
+                                                    value="binned">
+                                            </div>
+                                            <div class="col-md-4" id="binningBinsContainer">
+                                                <label class="form-label">Number of Bins</label>
+                                                <input type="number" class="form-control" id="binningBins" value="5"
+                                                    min="2">
+                                            </div>
+                                            <div class="col-md-4" id="binningLabelsContainer">
+                                                <label class="form-label">Labels (comma separated)</label>
+                                                <input type="text" class="form-control" id="binningLabels"
+                                                    placeholder="low,medium,high">
+                                            </div>
+                                            <div class="col-md-8" id="binningCustomContainer" style="display: none;">
+                                                <label class="form-label">Bin Edges (comma separated numbers)</label>
+                                                <input type="text" class="form-control" id="binningCustomEdges"
+                                                    placeholder="0,10,20,30">
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary" id="addBinningBtn">Add Operation</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Selected Operations -->
+                <div class="card mb-4 d-none" id="selectedOperationsCard">
+                    <div class="card-header">
+                        <h5>3. Selected Operations</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="selectedOperationsList" class="mb-3"></div>
+                        <button class="btn btn-success" id="processBtn">
+                            <i class="bi bi-gear"></i> Process Dataset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="card mb-4 d-none" id="resultsCard">
+                    <div class="card-header">
+                        <h5>4. Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultsInfo" class="mb-3"></div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered" id="resultsTable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <a href="#" class="btn btn-primary mt-3 d-none" id="downloadBtn">
+                            <i class="bi bi-download"></i> Download Processed Dataset
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var currentFilename = '';
+            var datasetInfo = {};
+            var operations = [];
+
+
+            var fileInput = document.getElementById('fileInput');
+            var uploadBtn = document.getElementById('uploadBtn');
+            var uploadStatus = document.getElementById('uploadStatus');
+            var previewCard = document.getElementById('previewCard');
+            var previewTable = document.getElementById('previewTable');
+            var rowCount = document.getElementById('rowCount');
+            var colCount = document.getElementById('colCount');
+            var operationsCard = document.getElementById('operationsCard');
+            var selectedOperationsCard = document.getElementById('selectedOperationsCard');
+            var selectedOperationsList = document.getElementById('selectedOperationsList');
+            var processBtn = document.getElementById('processBtn');
+            var resultsCard = document.getElementById('resultsCard');
+            var resultsTable = document.getElementById('resultsTable');
+            var resultsInfo = document.getElementById('resultsInfo');
+            var downloadBtn = document.getElementById('downloadBtn');
+
+
+            var addMissingBtn = document.getElementById('addMissingBtn');
+            var addEncodingBtn = document.getElementById('addEncodingBtn');
+            var addScalingBtn = document.getElementById('addScalingBtn');
+            var addTransformationBtn = document.getElementById('addTransformationBtn');
+            var addSelectionBtn = document.getElementById('addSelectionBtn');
+            var addOutliersBtn = document.getElementById('addOutliersBtn');
+            var addDimensionalityBtn = document.getElementById('addDimensionalityBtn');
+            var addCreationBtn = document.getElementById('addCreationBtn');
+            var addBinningBtn = document.getElementById('addBinningBtn');
+
+
+            initEventListeners();
+
+            function initEventListeners() {
+
+                uploadBtn.addEventListener('click', handleFileUpload);
+
+
+                addMissingBtn.addEventListener('click', function () { addOperation('missing'); });
+                addEncodingBtn.addEventListener('click', function () { addOperation('encoding'); });
+                addScalingBtn.addEventListener('click', function () { addOperation('scaling'); });
+                addTransformationBtn.addEventListener('click', function () { addOperation('transformation'); });
+                addSelectionBtn.addEventListener('click', function () { addOperation('feature_selection'); });
+                addOutliersBtn.addEventListener('click', function () { addOperation('outliers'); });
+                addDimensionalityBtn.addEventListener('click', function () { addOperation('dimensionality'); });
+                addCreationBtn.addEventListener('click', function () { addOperation('feature_creation'); });
+                addBinningBtn.addEventListener('click', function () { addOperation('binning'); });
+
+
+                processBtn.addEventListener('click', processOperations);
+
+
+                downloadBtn.addEventListener('click', downloadProcessedFile);
+
+
+                document.getElementById('missingStrategy').addEventListener('change', toggleMissingOptions);
+                document.getElementById('encodingMethod').addEventListener('change', toggleEncodingOptions);
+                document.getElementById('scalingMethod').addEventListener('change', toggleScalingOptions);
+                document.getElementById('selectionMethod').addEventListener('change', toggleSelectionOptions);
+                document.getElementById('outliersMethod').addEventListener('change', toggleOutliersOptions);
+                document.getElementById('creationOperation').addEventListener('change', toggleCreationOptions);
+                document.getElementById('binningMethod').addEventListener('change', toggleBinningOptions);
+            }
+
+            function handleFileUpload() {
+                var file = fileInput.files[0];
+                if (!file) {
+                    showAlert('Please select a file first', 'danger');
+                    return;
+                }
+
+                uploadBtn.disabled = true;
+                uploadStatus.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+
+                var formData = new FormData();
+                formData.append('file', file);
+
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+                        currentFilename = data.filename;
+                        datasetInfo = {
+                            columns: data.columns,
+                            dtypes: data.dtypes,
+                            missing: data.missing,
+                            stats: data.stats
+                        };
+
+
+                        displayPreview(data.preview);
+                        populateColumnSelects();
+
+
+                        previewCard.classList.remove('d-none');
+                        operationsCard.classList.remove('d-none');
+
+                        uploadStatus.innerHTML = '<div class="alert alert-success" style="color:black;">File uploaded successfully!</div>';
+                    })
+                    .catch(function (error) {
+                        uploadStatus.innerHTML = '<div class="alert alert-danger">Error: ' + error.message + '</div>';
+                        console.error('Error:', error);
+                    })
+                    .finally(function () {
+                        uploadBtn.disabled = false;
+                    });
+            }
+
+            function displayPreview(data) {
+                if (!data || data.length === 0) return;
+
+
+                previewTable.innerHTML = '';
+
+
+                var thead = document.createElement('thead');
+                thead.className = 'table-dark';
+                var headerRow = document.createElement('tr');
+
+                Object.keys(data[0]).forEach(function (col) {
+                    var th = document.createElement('th');
+
+
+                    var div = document.createElement('div');
+                    div.style.display = "flex";
+                    div.style.flexDirection = "column";
+                    div.style.alignItems = "flex-start";
+
+
+                    var colText = document.createElement('span');
+                    colText.textContent = col;
+                    colText.style.color = "#fff";
+
+                    div.appendChild(colText);
+
+
+                    var dtype = datasetInfo.dtypes[col];
+                    if (dtype) {
+                        var dtypeBadge = document.createElement('span');
+                        dtypeBadge.className = 'badge bg-secondary mt-1';
+                        dtypeBadge.textContent = dtype.includes('object') ? 'text' : dtype;
+                        div.appendChild(dtypeBadge);
+                    }
+
+
+                    var missing = datasetInfo.missing[col];
+                    if (missing > 0) {
+                        var missingBadge = document.createElement('span');
+                        missingBadge.className = 'badge bg-warning mt-1';
+                        missingBadge.textContent = missing + ' missing';
+                        div.appendChild(missingBadge);
+                    }
+
+                    th.appendChild(div);
+                    headerRow.appendChild(th);
+                });
+
+                thead.appendChild(headerRow);
+                previewTable.appendChild(thead);
+
+
+                var tbody = document.createElement('tbody');
+
+                data.forEach(function (row) {
+                    var tr = document.createElement('tr');
+
+                    Object.values(row).forEach(function (value) {
+                        var td = document.createElement('td');
+                        td.textContent = value;
+                        td.style.color = "#ffffff";
+                        td.style.backgroundColor = "#121212";
+                        tr.appendChild(td);
+                    });
+
+                    tbody.appendChild(tr);
+                });
+
+                previewTable.appendChild(tbody);
+
+                // Update counts
+                rowCount.textContent = data.length + ' rows';
+                colCount.textContent = Object.keys(data[0]).length + ' columns';
+            }
+
+
+            function populateColumnSelects() {
+                if (!datasetInfo.columns) return;
+
+                var allSelects = document.querySelectorAll('select[id$="Columns"], select[id$="Column"], select[id$="Col"], select[id$="Target"]');
+
+                allSelects.forEach(function (select) {
+
+                    select.innerHTML = '';
+
+                    datasetInfo.columns.forEach(function (col) {
+                        var option = document.createElement('option');
+                        option.value = col;
+                        option.textContent = col;
+
+
+                        if (select.id.includes('Target') && select.id !== 'encodingTarget') {
+                            select.appendChild(option.cloneNode(true));
+                        } else {
+                            select.appendChild(option);
+                        }
+                    });
+                });
+
+
+                var interactionCol1 = document.getElementById('creationInteractionCol1');
+                var interactionCol2 = document.getElementById('creationInteractionCol2');
+
+                if (interactionCol1 && interactionCol2) {
+                    interactionCol1.innerHTML = '';
+                    interactionCol2.innerHTML = '';
+
+                    datasetInfo.columns.forEach(function (col) {
+                        var option = document.createElement('option');
+                        option.value = col;
+                        option.textContent = col;
+
+                        interactionCol1.appendChild(option.cloneNode(true));
+                        interactionCol2.appendChild(option.cloneNode(true));
+                    });
+                }
+            }
+
+            function toggleMissingOptions() {
+                var strategy = document.getElementById('missingStrategy').value;
+                document.getElementById('missingConstantContainer').style.display = strategy === 'constant' ? 'block' : 'none';
+                document.getElementById('missingKNNContainer').style.display = strategy === 'knn' ? 'block' : 'none';
+            }
+
+            function toggleEncodingOptions() {
+                var method = document.getElementById('encodingMethod').value;
+                document.getElementById('encodingTargetContainer').style.display = method === 'target' ? 'block' : 'none';
+            }
+
+            function toggleScalingOptions() {
+                var method = document.getElementById('scalingMethod').value;
+                document.getElementById('scalingRangeContainer').style.display = method === 'minmax' ? 'block' : 'none';
+            }
+
+            function toggleSelectionOptions() {
+                var method = document.getElementById('selectionMethod').value;
+                document.getElementById('selectionTargetContainer').style.display =
+                    (method === 'kbest' || method === 'rfe') ? 'block' : 'none';
+                document.getElementById('selectionScoreFuncContainer').style.display =
+                    method === 'kbest' ? 'block' : 'none';
+                document.getElementById('selectionThresholdContainer').style.display =
+                    method === 'correlation' ? 'block' : 'none';
+            }
+
+            function toggleOutliersOptions() {
+                var method = document.getElementById('outliersMethod').value;
+                document.getElementById('outliersRangeContainer').style.display =
+                    (method === 'clip' || method === 'remove') ? 'block' : 'none';
+            }
+
+            function toggleCreationOptions() {
+                var operation = document.getElementById('creationOperation').value;
+
+                document.getElementById('creationInteractionContainer').style.display =
+                    operation === 'interaction' ? 'block' : 'none';
+                document.getElementById('creationPolynomialContainer').style.display =
+                    operation === 'polynomial' ? 'block' : 'none';
+                document.getElementById('creationAggregationContainer').style.display =
+                    operation === 'aggregation' ? 'block' : 'none';
+                document.getElementById('creationDatetimeContainer').style.display =
+                    operation === 'datetime' ? 'block' : 'none';
+            }
+
+            function toggleBinningOptions() {
+                var method = document.getElementById('binningMethod').value;
+                document.getElementById('binningCustomContainer').style.display =
+                    method === 'custom' ? 'block' : 'none';
+                document.getElementById('binningBinsContainer').style.display =
+                    method !== 'custom' ? 'block' : 'none';
+            }
+
+            function addOperation(type) {
+                var operation = { type: type };
+
+                try {
+                    switch (type) {
+                        case 'missing':
+                            operation.columns = Array.from(document.getElementById('missingColumns').selectedOptions).map(function (o) { return o.value; });
+                            if (operation.columns.length === 0) throw new Error('Select at least one column');
+
+                            operation.strategy = document.getElementById('missingStrategy').value;
+
+                            if (operation.strategy === 'constant') {
+                                operation.value = parseFloat(document.getElementById('missingConstant').value);
+                            } else if (operation.strategy === 'knn') {
+                                operation.n_neighbors = parseInt(document.getElementById('missingKNN').value);
+                            }
+                            break;
+
+                        case 'encoding':
+                            operation.columns = Array.from(document.getElementById('encodingColumns').selectedOptions).map(function (o) { return o.value; });
+                            if (operation.columns.length === 0) throw new Error('Select at least one column');
+
+                            operation.method = document.getElementById('encodingMethod').value;
+
+                            if (operation.method === 'target') {
+                                operation.target = document.getElementById('encodingTarget').value;
+                                if (!operation.target) throw new Error('Select a target column');
+                            } else if (operation.method === 'onehot') {
+                                operation.drop = 'first';
+                            }
+                            break;
+
+                        case 'scaling':
+                            operation.columns = Array.from(document.getElementById('scalingColumns').selectedOptions).map(function (o) { return o.value; });
+                            if (operation.columns.length === 0) throw new Error('Select at least one column');
+
+                            operation.method = document.getElementById('scalingMethod').value;
+
+                            if (operation.method === 'minmax') {
+                                operation.range = [
+                                    parseFloat(document.getElementById('scalingMin').value),
+                                    parseFloat(document.getElementById('scalingMax').value)
+                                ];
+                            }
+                            break;
+
+                        case 'transformation':
+                            operation.columns = Array.from(document.getElementById('transformationColumns').selectedOptions).map(function (o) { return o.value; });
+                            if (operation.columns.length === 0) throw new Error('Select at least one column');
+
+                            operation.method = document.getElementById('transformationMethod').value;
+                            break;
+
+                        case 'feature_selection':
+                            operation.method = document.getElementById('selectionMethod').value;
+
+                            if (['kbest', 'rfe'].includes(operation.method)) {
+                                operation.target = document.getElementById('selectionTarget').value;
+                                if (!operation.target) throw new Error('Select a target column');
+                            }
+
+                            if (operation.method === 'kbest') {
+                                operation.score_func = document.getElementById('selectionScoreFunc').value;
+                                operation.k = parseInt(document.getElementById('selectionK').value);
+                            } else if (operation.method === 'rfe') {
+                                operation.k = parseInt(document.getElementById('selectionK').value);
+                            } else if (operation.method === 'correlation') {
+                                operation.threshold = parseFloat(document.getElementById('selectionThreshold').value);
+                            } else if (operation.method === 'variance') {
+                                operation.threshold = 0;
+                            }
+                            break;
+
+                        case 'outliers':
+                            operation.columns = Array.from(document.getElementById('outliersColumns').selectedOptions).map(function (o) { return o.value; });
+                            if (operation.columns.length === 0) throw new Error('Select at least one column');
+
+                            operation.method = document.getElementById('outliersMethod').value;
+
+                            if (['clip', 'remove'].includes(operation.method)) {
+                                operation.lower = parseInt(document.getElementById('outliersLower').value) / 100;
+                                operation.upper = parseInt(document.getElementById('outliersUpper').value) / 100;
+                            }
+                            break;
+
+                        case 'dimensionality':
+                            operation.method = document.getElementById('dimensionalityMethod').value;
+                            operation.n_components = parseInt(document.getElementById('dimensionalityComponents').value);
+
+                            var target = document.getElementById('dimensionalityTarget').value;
+                            if (target) operation.target = target;
+                            break;
+
+                        case 'feature_creation':
+                            operation.operation = document.getElementById('creationOperation').value;
+                            operation.new_feature = document.getElementById('creationNewFeature').value;
+
+                            if (!operation.new_feature) throw new Error('Enter a name for the new feature');
+
+                            if (operation.operation === 'interaction') {
+                                operation.columns = [
+                                    document.getElementById('creationInteractionCol1').value,
+                                    document.getElementById('creationInteractionCol2').value
+                                ];
+                            } else if (operation.operation === 'polynomial') {
+                                operation.column = document.getElementById('creationPolynomialCol').value;
+                                operation.degree = parseInt(document.getElementById('creationPolynomialDegree').value);
+                            } else if (operation.operation === 'aggregation') {
+                                operation.group_column = document.getElementById('creationAggregationGroup').value;
+                                operation.aggregation_column = document.getElementById('creationAggregationCol').value;
+                                operation.aggregation_function = document.getElementById('creationAggregationFunc').value;
+                            } else if (operation.operation === 'datetime') {
+                                operation.column = document.getElementById('creationDatetimeCol').value;
+                                operation.part = document.getElementById('creationDatetimePart').value;
+                            }
+                            break;
+
+                        case 'binning':
+                            operation.column = document.getElementById('binningColumn').value;
+                            operation.method = document.getElementById('binningMethod').value;
+                            operation.new_feature = document.getElementById('binningNewFeature').value || operation.column + '_binned';
+
+                            if (operation.method === 'custom') {
+                                var edges = document.getElementById('binningCustomEdges').value;
+                                if (!edges) throw new Error('Enter bin edges');
+                                operation.bin_edges = edges.split(',').map(Number);
+                            } else {
+                                operation.bins = parseInt(document.getElementById('binningBins').value);
+                            }
+
+                            var labels = document.getElementById('binningLabels').value;
+                            if (labels) {
+                                operation.labels = labels.split(',');
+                            }
+                            break;
+                    }
+
+                    operations.push(operation);
+                    displaySelectedOperations();
+                    selectedOperationsCard.classList.remove('d-none');
+                    showAlert('Operation added successfully', 'success');
+                } catch (error) {
+                    showAlert(error.message, 'danger');
+                }
+            }
+
+            function displaySelectedOperations() {
+                selectedOperationsList.innerHTML = '';
+
+                if (operations.length === 0) {
+                    selectedOperationsList.innerHTML = '<div class="alert alert-info">No operations added yet</div>';
+                    return;
+                }
+
+                var ol = document.createElement('ol');
+                ol.className = 'list-group';
+
+                operations.forEach(function (op, index) {
+                    var li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+                    var description = '';
+
+                    switch (op.type) {
+                        case 'missing':
+                            description = 'Handle missing values in ' + op.columns.join(', ') + ' using ' + op.strategy;
+                            if (op.strategy === 'constant') description += ' (value: ' + op.value + ')';
+                            if (op.strategy === 'knn') description += ' (neighbors: ' + op.n_neighbors + ')';
+                            break;
+
+                        case 'encoding':
+                            description = 'Encode ' + op.columns.join(', ') + ' using ' + op.method;
+                            if (op.method === 'target') description += ' (target: ' + op.target + ')';
+                            break;
+
+                        case 'scaling':
+                            description = 'Scale ' + op.columns.join(', ') + ' using ' + op.method;
+                            if (op.method === 'minmax') description += ' (range: [' + op.range.join(', ') + '])';
+                            break;
+
+                        case 'transformation':
+                            description = 'Transform ' + op.columns.join(', ') + ' using ' + op.method;
+                            break;
+
+                        case 'feature_selection':
+                            description = 'Feature selection using ' + op.method;
+                            if (op.method === 'kbest') description += ' (k: ' + op.k + ', score: ' + op.score_func + ')';
+                            if (op.method === 'rfe') description += ' (k: ' + op.k + ')';
+                            if (op.method === 'correlation') description += ' (threshold: ' + op.threshold + ')';
+                            if (op.target) description += ' (target: ' + op.target + ')';
+                            break;
+
+                        case 'outliers':
+                            description = 'Handle outliers in ' + op.columns.join(', ') + ' using ' + op.method;
+                            if (['clip', 'remove'].includes(op.method)) {
+                                description += ' (range: ' + (op.lower * 100) + '%-' + (op.upper * 100) + '%)';
+                            }
+                            break;
+
+                        case 'dimensionality':
+                            description = 'Dimensionality reduction using ' + op.method + ' (components: ' + op.n_components + ')';
+                            if (op.target) description += ' (target: ' + op.target + ')';
+                            break;
+
+                        case 'feature_creation':
+                            description = 'Create new feature "' + op.new_feature + '" by ';
+                            if (op.operation === 'interaction') {
+                                description += 'multiplying ' + op.columns.join(' and ');
+                            } else if (op.operation === 'polynomial') {
+                                description += 'raising ' + op.column + ' to power ' + op.degree;
+                            } else if (op.operation === 'aggregation') {
+                                description += op.aggregation_function + ' of ' + op.aggregation_column + ' grouped by ' + op.group_column;
+                            } else if (op.operation === 'datetime') {
+                                description += 'extracting ' + op.part + ' from ' + op.column;
+                            }
+                            break;
+
+                        case 'binning':
+                            description = 'Bin ' + op.column + ' into "' + op.new_feature + '" using ' + op.method;
+                            if (op.method === 'custom') {
+                                description += ' (edges: ' + op.bin_edges.join(', ') + ')';
+                            } else {
+                                description += ' (bins: ' + op.bins + ')';
+                            }
+                            if (op.labels) description += ' (labels: ' + op.labels.join(', ') + ')';
+                            break;
+                    }
+
+                    var indexSpan = document.createElement('span');
+                    indexSpan.className = 'badge bg-primary me-2';
+                    indexSpan.textContent = index + 1;
+
+                    var descDiv = document.createElement('div');
+                    descDiv.appendChild(indexSpan);
+                    descDiv.appendChild(document.createTextNode(description));
+
+                    var removeBtn = document.createElement('button');
+                    removeBtn.className = 'btn btn-sm btn-danger remove-operation';
+                    removeBtn.setAttribute('data-index', index);
+
+                    var icon = document.createElement('i');
+                    icon.className = 'bi bi-trash';
+                    removeBtn.appendChild(icon);
+
+                    li.appendChild(descDiv);
+                    li.appendChild(removeBtn);
+
+                    ol.appendChild(li);
+                });
+
+                selectedOperationsList.appendChild(ol);
+
+                // Add event listeners to remove buttons
+                document.querySelectorAll('.remove-operation').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var index = parseInt(this.getAttribute('data-index'));
+                        operations.splice(index, 1);
+                        displaySelectedOperations();
+
+                        if (operations.length === 0) {
+                            selectedOperationsCard.classList.add('d-none');
+                        }
+                    });
+                });
+            }
+
+            function processOperations() {
+                if (operations.length === 0) {
+                    showAlert('No operations to process', 'warning');
+                    return;
+                }
+
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+
+                fetch('/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        filename: currentFilename,
+                        operations: operations
+                    })
+                })
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+
+                        displayResults(data.preview, data.results);
+
+
+                        downloadBtn.href = '/download/' + data.processed_filename;
+                        downloadBtn.classList.remove('d-none');
+
+                        showAlert('Dataset processed successfully!', 'success');
+                    })
+                    .catch(function (error) {
+                        showAlert('Error: ' + error.message, 'danger');
+                        console.error('Error:', error);
+                    })
+                    .finally(function () {
+                        processBtn.disabled = false;
+                        processBtn.innerHTML = '<i class="bi bi-gear"></i> Process Dataset';
+                    });
+            }
+
+            function displayResults(data, results) {
+                if (!data || data.length === 0) return;
+
+
+                resultsTable.innerHTML = '';
+                resultsInfo.innerHTML = '';
+
+
+                var thead = document.createElement('thead');
+                var headerRow = document.createElement('tr');
+
+                Object.keys(data[0]).forEach(function (col) {
+                    var th = document.createElement('th');
+                    th.textContent = col;
+                    // Apply styling for black background and white text in header
+                    th.style.backgroundColor = 'black';
+                    th.style.color = 'white';
+                    headerRow.appendChild(th);
+                });
+
+                thead.appendChild(headerRow);
+                resultsTable.appendChild(thead);
+
+
+                var tbody = document.createElement('tbody');
+
+                data.forEach(function (row) {
+                    var tr = document.createElement('tr');
+
+                    Object.values(row).forEach(function (value) {
+                        var td = document.createElement('td');
+                        td.textContent = value;
+                        // Apply styling for black background and white text in rows
+                        td.style.backgroundColor = 'black';
+                        td.style.color = 'white';
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+
+                resultsTable.appendChild(tbody);
+
+
+                if (results && Object.keys(results).length > 0) {
+                    var infoHTML = '<h6>Operation Results:</h6><ul>';
+
+                    for (var opType in results) {
+                        if (results.hasOwnProperty(opType)) {
+                            var result = results[opType];
+                            infoHTML += '<li><strong>' + opType.replace('_', ' ') + ':</strong> ';
+
+                            if (opType === 'feature_selection') {
+                                if (result.selected_features) {
+                                    infoHTML += 'Selected features: ' + result.selected_features.join(', ');
+                                }
+                                if (result.dropped_features) {
+                                    infoHTML += 'Dropped features: ' + result.dropped_features.join(', ');
+                                }
+                                if (result.scores) {
+                                    infoHTML += '<br>Scores: ' + Object.entries(result.scores)
+                                        .map(function (entry) { return entry[0] + ': ' + entry[1].toFixed(2); })
+                                        .join(', ');
+                                }
+                            } else if (opType === 'dimensionality') {
+                                if (result.explained_variance) {
+                                    infoHTML += 'Explained variance: ' + Object.entries(result.explained_variance)
+                                        .map(function (entry) { return entry[0] + ': ' + (entry[1] * 100).toFixed(1) + '%'; })
+                                        .join(', ');
+                                }
+                            }
+
+                            infoHTML += '</li>';
+                        }
+                    }
+
+                    infoHTML += '</ul>';
+                    resultsInfo.innerHTML = infoHTML;
+                }
+
+
+                resultsCard.classList.remove('d-none');
+            }
+
+            function downloadProcessedFile(e) {
+                e.preventDefault();
+                window.location.href = this.href;
+            }
+
+            function showAlert(message, type) {
+                var alert = document.createElement('div');
+                alert.className = 'alert alert-' + type + ' alert-dismissible fade show';
+                alert.role = 'alert';
+
+                var messageNode = document.createTextNode(message);
+                alert.appendChild(messageNode);
+
+                var closeBtn = document.createElement('button');
+                closeBtn.type = 'button';
+                closeBtn.className = 'btn-close';
+                closeBtn.setAttribute('data-bs-dismiss', 'alert');
+                closeBtn.setAttribute('aria-label', 'Close');
+                alert.appendChild(closeBtn);
+
+                var container = document.createElement('div');
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '11';
+                container.appendChild(alert);
+
+                document.body.appendChild(container);
+
+                // Auto-remove after 5 seconds
+                setTimeout(function () {
+                    container.remove();
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+
+</html>
